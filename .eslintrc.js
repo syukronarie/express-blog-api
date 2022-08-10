@@ -5,7 +5,6 @@ module.exports = {
   },
   extends: [
     "airbnb-base",
-    "prettier",
     "plugin:jest/recommended",
     "plugin:security/recommended",
     "plugin:prettier/recommended",

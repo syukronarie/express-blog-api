@@ -4,27 +4,21 @@ const db = require("../config/db");
 const logger = require("../config/logger");
 const CONST = require("../utils/Constants");
 const ApiError = require("../utils/ApiError");
+const User = require("../models/user.model");
 
 class UserRepository {
-  async create(userBody) {
-    console.log("userBody", userBody);
-    const { email, password, userName, firstName, lastName } = userBody;
+  constructor() {
+    this.user = new User();
+  }
+
+  async create(data) {
     try {
       logger.info("Entering create function of UserRepository");
-      const ids = await db(CONST.USERS_TABLE).insert(
-        {
-          first_name: firstName,
-          last_name: lastName,
-          username: userName,
-          password,
-          email,
-          created_at: new Date(),
-        },
-        ["id"]
-      );
-      userBody.id = ids[0].id;
+      const ids = await db(CONST.USERS_TABLE).insert(data, ["id"]);
+      data.id = ids[0].id;
+      delete data.password;
       logger.info("Success: Exiting create function of UserRepository");
-      return userBody;
+      return data;
     } catch (err) {
       logger.info("Error: Exiting create function of UserRepository");
       logger.error(err);
@@ -40,7 +34,42 @@ class UserRepository {
       return res;
     } catch (err) {
       logger.info("Error: Exiting isEmailTaken function of UserRepository");
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Internal server error", true, err);
+    }
+  }
+
+  async getUsers(filter, options) {
+    logger.info("Entering getUsers function of UserRepository");
+    const firstName = filter.firstName || null;
+    const lastName = filter.lastName || null;
+    const sortBy = filter.sortBy || null;
+    const result = {};
+    const limit = options.limit || 10;
+    let page = options.page || 1;
+    if (page < 1) page = 1;
+    const offset = (page - 1) * limit;
+    try {
+      const { count } = await db(CONST.USERS_TABLE).count("*").first();
+      const query = db(CONST.USERS_TABLE).select("*").limit(limit).offset(offset);
+      if (firstName) query.andWhere("first_name", firstName);
+      if (lastName) query.andWhere("last_name", lastName);
+      if (sortBy) query.orderBy("first_name", sortBy);
+      const responses = await query.then((res) => res);
+      if (responses.length > 0)
+        responses.forEach((val) => {
+          delete val.password;
+        });
+      result.total = Number(count);
+      result.limit = limit;
+      result.offset = offset;
+      result.lastPage = Math.ceil(count / limit);
+      result.currentPage = page;
+      result.data = responses.map((values) => this.user.parseRawFromQuery(values));
+      logger.info("Success: Exiting getUsers function of UserRepository");
+      return result;
+    } catch (err) {
+      logger.info("Error: Exiting getUsers function of UserRepository");
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", true, err);
     }
   }
 }

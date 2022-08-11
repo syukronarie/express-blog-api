@@ -1,4 +1,5 @@
 const httpStatus = require("http-status");
+const config = require("../config/config");
 const logger = require("../config/logger");
 const ApiError = require("../utils/ApiError");
 
@@ -20,19 +21,16 @@ const errorHandler = (err, req, res, next) => {
     statusCode = httpStatus.INTERNAL_SERVER_ERROR;
     message = httpStatus[httpStatus.INTERNAL_SERVER_ERROR];
   }
-
   res.locals.errorMessage = err.message;
-
   const response = {
+    success: false,
     code: statusCode,
     message,
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+    ...(config.env === "development" && { stack: err.stack }),
   };
-
-  if (process.env.NODE_ENV === "development") {
+  if (config.env === "development") {
     logger.error(err);
   }
-
   res.status(statusCode).send(response);
 };
 

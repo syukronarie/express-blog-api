@@ -1,19 +1,43 @@
+/* eslint-disable camelcase */
 class User {
-  constructor({ email, password, userName, firstName, lastName }) {
-    this.email = email;
-    this.password = password;
-    this.userName = userName;
-    this.firstName = firstName;
-    this.lastName = lastName;
+  parseRawFromObject({ email, password, userName, firstName, lastName }) {
+    return {
+      email,
+      password,
+      userName,
+      firstName,
+      lastName,
+    };
   }
 
-  parseRaw() {
+  parseRawFromQuery({ email, username, first_name, last_name, created_at, updated_at }) {
     return {
-      email: this.email,
-      password: this.password,
-      userName: this.userName,
-      firstName: this.firstName,
-      lastName: this.lastName,
+      email,
+      userName: username,
+      firstName: first_name,
+      lastName: last_name,
+      createdAt: created_at,
+      updatedAt: updated_at,
+    };
+  }
+
+  parseRawFromObjectToQuery({
+    email,
+    password,
+    userName,
+    firstName,
+    lastName,
+    createdAt = new Date(),
+    updatedAt = new Date(),
+  }) {
+    return {
+      email,
+      username: userName,
+      password,
+      first_name: firstName,
+      last_name: lastName,
+      created_at: createdAt,
+      updated_at: updatedAt,
     };
   }
 }

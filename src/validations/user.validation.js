@@ -15,7 +15,8 @@ const getUsers = {
   query: Joi.object().keys({
     firstName: Joi.string(),
     lastName: Joi.string(),
-    sortBy: Joi.string(),
+    userName: Joi.string(),
+    sortBy: Joi.string().default("asc").valid("asc", "desc"),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
   }),

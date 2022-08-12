@@ -10,8 +10,9 @@ class User {
     };
   }
 
-  parseRawFromQuery({ email, username, first_name, last_name, created_at, updated_at }) {
+  parseRawFromQuery({ id, email, username, first_name, last_name, created_at, updated_at }) {
     return {
+      id,
       email,
       userName: username,
       firstName: first_name,

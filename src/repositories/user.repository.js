@@ -55,6 +55,7 @@ class UserRepository {
       if (lastName) query.andWhere("last_name", lastName);
       if (sortBy) query.orderBy("first_name", sortBy);
       const responses = await query.then((res) => res);
+      console.log(responses);
       if (responses.length > 0)
         responses.forEach((val) => {
           delete val.password;
@@ -70,6 +71,18 @@ class UserRepository {
     } catch (err) {
       logger.info("Error: Exiting getUsers function of UserRepository");
       throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", true, err);
+    }
+  }
+
+  async findById(id) {
+    logger.info("Entering findById function of UserRepository");
+    try {
+      const res = await db(CONST.USERS_TABLE).where({ id }).first();
+      logger.info("Success: Exiting findById function of UserRepository");
+      return res;
+    } catch (err) {
+      logger.info("Error: Exiting findById function of UserRepository");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Internal server error", true, err);
     }
   }
 }

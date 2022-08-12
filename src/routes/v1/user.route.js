@@ -10,4 +10,6 @@ router
   .post(validate(userValidation.createUser), userController.createUser)
   .get(validate(userValidation.getUsers), userController.getUsers);
 
+router.route("/:userId").get(validate(userValidation.getUser), userController.getUser);
+
 module.exports = router;

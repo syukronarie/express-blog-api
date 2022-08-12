@@ -21,8 +21,15 @@ const createUser = async (userBody) => {
 const queryUsers = async (filter, options) => {
   logger.info("Entering getUsers function of user.service");
   const result = userRepo.getUsers(filter, options);
-  logger.info("Exiting createUser function of user.service");
+  logger.info("Exiting getUsers function of user.service");
   return result;
 };
 
-module.exports = { createUser, queryUsers };
+const getUserById = async (id) => {
+  logger.info("Entering getUserById function of user.service");
+  const result = userRepo.findById(id);
+  logger.info("Exiting getUserById function of user.service");
+  return result;
+};
+
+module.exports = { createUser, queryUsers, getUserById };

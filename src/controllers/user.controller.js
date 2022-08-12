@@ -4,6 +4,7 @@ const userService = require("../services/user.service");
 const logger = require("../config/logger");
 const pick = require("../utils/pick");
 const { sendResponseWithData } = require("../utils/responses");
+const ApiError = require("../utils/ApiError");
 
 const createUser = catchAsync(async (req, res) => {
   logger.info("Entering createUser function of user.controller");
@@ -21,4 +22,14 @@ const getUsers = catchAsync(async (req, res) => {
   return sendResponseWithData(res, result);
 });
 
-module.exports = { createUser, getUsers };
+const getUser = catchAsync(async (req, res) => {
+  logger.info("Entering getUser function of user.controller");
+  const user = await userService.getUserById(req.params.userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+  logger.info("Exiting getUser function of user.controller");
+  return sendResponseWithData(res, user);
+});
+
+module.exports = { createUser, getUsers, getUser };

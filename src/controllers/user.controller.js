@@ -32,4 +32,11 @@ const getUser = catchAsync(async (req, res) => {
   return sendResponseWithData(res, user);
 });
 
-module.exports = { createUser, getUsers, getUser };
+const updateUser = catchAsync(async (req, res) => {
+  logger.info("Entering updateUser function of user.controller");
+  const user = await userService.updateUserById(req.params.userId, req.body);
+  logger.info("Exiting getUser function of user.controller");
+  return sendResponseWithData(res, user);
+});
+
+module.exports = { createUser, getUsers, getUser, updateUser };

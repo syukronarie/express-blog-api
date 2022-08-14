@@ -2,20 +2,13 @@
 /* eslint-disable no-param-reassign */
 const httpStatus = require("http-status");
 const db = require("../config/db");
-const logger = require("../config/logger");
 const CONST = require("../utils/Constants");
 const ApiError = require("../utils/ApiError");
 const User = require("../models/user.model");
 
-function parseRawQueryToObject({
-  id,
-  email,
-  username,
-  first_name,
-  last_name,
-  created_at,
-  updated_at,
-}) {
+function parseRawQueryToObject(data) {
+  if (!data) return null;
+  const { id, email, username, first_name, last_name, created_at, updated_at } = data;
   return {
     id,
     email,
@@ -27,15 +20,27 @@ function parseRawQueryToObject({
   };
 }
 
-function parseRawObjectToQuery({
-  email,
-  password,
-  userName,
-  firstName,
-  lastName,
-  createdAt = new Date(),
-  updatedAt = new Date(),
-}) {
+function parseRawObjectToQuery(data, isUpdate = false) {
+  if (!data) return null;
+  const {
+    email,
+    password,
+    userName,
+    firstName,
+    lastName,
+    createdAt = new Date(),
+    updatedAt = new Date(),
+  } = data;
+  if (isUpdate) {
+    return {
+      email,
+      username: userName,
+      password,
+      first_name: firstName,
+      last_name: lastName,
+      updated_at: updatedAt,
+    };
+  }
   return {
     email,
     username: userName,
@@ -54,34 +59,26 @@ class UserRepository {
 
   async create(userBody) {
     try {
-      logger.info("Entering create function of UserRepository");
       const data = parseRawObjectToQuery(userBody);
       const ids = await db(CONST.USERS_TABLE).insert(data, ["id"]);
       data.id = ids[0].id;
       delete data.password;
-      logger.info("Success: Exiting create function of UserRepository");
       return parseRawQueryToObject(data);
     } catch (err) {
-      logger.info("Error: Exiting create function of UserRepository");
-      logger.error(err);
       throw new ApiError(httpStatus.BAD_REQUEST, "error");
     }
   }
 
   async isEmailTaken(email) {
-    logger.info("Entering isEmailTaken function of UserRepository");
     try {
       const res = await db(CONST.USERS_TABLE).where({ email }).first();
-      logger.info("Success: Exiting isEmailTaken function of UserRepository");
       return res;
     } catch (err) {
-      logger.info("Error: Exiting isEmailTaken function of UserRepository");
       throw new ApiError(httpStatus.BAD_REQUEST, "Internal server error", true, err);
     }
   }
 
   async getUsers(filter, options) {
-    logger.info("Entering getUsers function of UserRepository");
     const firstName = filter.firstName || null;
     const lastName = filter.lastName || null;
     const sortBy = filter.sortBy || null;
@@ -91,13 +88,13 @@ class UserRepository {
     if (page < 1) page = 1;
     const offset = (page - 1) * limit;
     try {
-      const { count } = await db(CONST.USERS_TABLE).count("*").first();
       const query = db(CONST.USERS_TABLE).select("*").limit(limit).offset(offset);
       if (firstName) query.andWhere("first_name", firstName);
       if (lastName) query.andWhere("last_name", lastName);
       if (sortBy) query.orderBy("first_name", sortBy);
       const responses = await query.then((res) => res);
-      if (responses.length > 0)
+      const count = responses.length;
+      if (count > 0)
         responses.forEach((val) => {
           delete val.password;
         });
@@ -107,23 +104,29 @@ class UserRepository {
       result.lastPage = Math.ceil(count / limit);
       result.currentPage = page;
       result.data = responses.map((values) => parseRawQueryToObject(values));
-      logger.info("Success: Exiting getUsers function of UserRepository");
       return result;
     } catch (err) {
-      logger.info("Error: Exiting getUsers function of UserRepository");
       throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", true, err);
     }
   }
 
   async findById(id) {
-    logger.info("Entering findById function of UserRepository");
     try {
       const res = await db(CONST.USERS_TABLE).where({ id }).first();
-      logger.info("Success: Exiting findById function of UserRepository");
       return parseRawQueryToObject(res);
     } catch (err) {
-      logger.info("Error: Exiting findById function of UserRepository");
       throw new ApiError(httpStatus.BAD_REQUEST, "Internal server error", true, err);
+    }
+  }
+
+  async updateUserById(id, updateBody) {
+    try {
+      const data = parseRawObjectToQuery(updateBody, true);
+      const ids = await db(CONST.USERS_TABLE).where({ id }).update(data, ["id"]);
+      data.id = ids[0].id;
+      return parseRawQueryToObject(data);
+    } catch (err) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Internal server error", false, err);
     }
   }
 }

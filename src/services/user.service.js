@@ -35,4 +35,13 @@ const updateUserById = async (userId, updateBody) => {
   return result;
 };
 
-module.exports = { createUser, queryUsers, getUserById, updateUserById };
+const deleteUserById = async (userId) => {
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+  const result = await userRepo.removeUserById(userId);
+  return result;
+};
+
+module.exports = { createUser, queryUsers, getUserById, updateUserById, deleteUserById };

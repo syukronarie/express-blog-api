@@ -89,8 +89,8 @@ class UserRepository {
     const offset = (page - 1) * limit;
     try {
       const query = db(CONST.USERS_TABLE).select("*").limit(limit).offset(offset);
-      if (firstName) query.andWhere("first_name", firstName);
-      if (lastName) query.andWhere("last_name", lastName);
+      if (firstName) query.andWhereLike("first_name", `%${firstName}%`);
+      if (lastName) query.andWhereLike("last_name", `%${lastName}%`);
       if (sortBy) query.orderBy("first_name", sortBy);
       const responses = await query.then((res) => res);
       const count = responses.length;
@@ -125,6 +125,15 @@ class UserRepository {
       const ids = await db(CONST.USERS_TABLE).where({ id }).update(data, ["id"]);
       data.id = ids[0].id;
       return parseRawQueryToObject(data);
+    } catch (err) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Internal server error", false, err);
+    }
+  }
+
+  async removeUserById(id) {
+    try {
+      const result = await db(CONST.USERS_TABLE).where({ id }).del();
+      return { id: result, deleted: true };
     } catch (err) {
       throw new ApiError(httpStatus.BAD_REQUEST, "Internal server error", false, err);
     }

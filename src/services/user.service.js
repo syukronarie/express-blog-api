@@ -6,28 +6,42 @@ const ApiError = require("../utils/ApiError");
 const userRepo = new UserRepository();
 
 const createUser = async (userBody) => {
-  logger.info("Entering createUser function of user.service");
   if (await userRepo.isEmailTaken(userBody.email)) {
     logger.info(JSON.stringify({ BAD_REQUEST: httpStatus.BAD_REQUEST }));
-    logger.info("Error: Exiting createUser function of user.service");
     throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
   }
-  logger.info("Success: Exiting createUser function of user.service");
   return userRepo.create(userBody);
 };
 
 const queryUsers = async (filter, options) => {
-  logger.info("Entering getUsers function of user.service");
-  const result = userRepo.getUsers(filter, options);
-  logger.info("Exiting getUsers function of user.service");
+  const result = await userRepo.getUsers(filter, options);
   return result;
 };
 
 const getUserById = async (id) => {
-  logger.info("Entering getUserById function of user.service");
-  const result = userRepo.findById(id);
-  logger.info("Exiting getUserById function of user.service");
+  const result = await userRepo.findById(id);
   return result;
 };
 
-module.exports = { createUser, queryUsers, getUserById };
+const updateUserById = async (userId, updateBody) => {
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+  if (updateBody.email && (await userRepo.isEmailTaken(updateBody.email, updateBody))) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
+  }
+  const result = await userRepo.updateUserById(userId, updateBody);
+  return result;
+};
+
+const deleteUserById = async (userId) => {
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+  const result = await userRepo.removeUserById(userId);
+  return result;
+};
+
+module.exports = { createUser, queryUsers, getUserById, updateUserById, deleteUserById };

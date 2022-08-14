@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-param-reassign */
 const httpStatus = require("http-status");
 const db = require("../config/db");
@@ -6,19 +7,60 @@ const CONST = require("../utils/Constants");
 const ApiError = require("../utils/ApiError");
 const User = require("../models/user.model");
 
+function parseRawQueryToObject({
+  id,
+  email,
+  username,
+  first_name,
+  last_name,
+  created_at,
+  updated_at,
+}) {
+  return {
+    id,
+    email,
+    userName: username,
+    firstName: first_name,
+    lastName: last_name,
+    createdAt: created_at,
+    updatedAt: updated_at,
+  };
+}
+
+function parseRawObjectToQuery({
+  email,
+  password,
+  userName,
+  firstName,
+  lastName,
+  createdAt = new Date(),
+  updatedAt = new Date(),
+}) {
+  return {
+    email,
+    username: userName,
+    password,
+    first_name: firstName,
+    last_name: lastName,
+    created_at: createdAt,
+    updated_at: updatedAt,
+  };
+}
+
 class UserRepository {
   constructor() {
     this.user = new User();
   }
 
-  async create(data) {
+  async create(userBody) {
     try {
       logger.info("Entering create function of UserRepository");
+      const data = parseRawObjectToQuery(userBody);
       const ids = await db(CONST.USERS_TABLE).insert(data, ["id"]);
       data.id = ids[0].id;
       delete data.password;
       logger.info("Success: Exiting create function of UserRepository");
-      return data;
+      return parseRawQueryToObject(data);
     } catch (err) {
       logger.info("Error: Exiting create function of UserRepository");
       logger.error(err);
@@ -55,7 +97,6 @@ class UserRepository {
       if (lastName) query.andWhere("last_name", lastName);
       if (sortBy) query.orderBy("first_name", sortBy);
       const responses = await query.then((res) => res);
-      console.log(responses);
       if (responses.length > 0)
         responses.forEach((val) => {
           delete val.password;
@@ -65,7 +106,7 @@ class UserRepository {
       result.offset = offset;
       result.lastPage = Math.ceil(count / limit);
       result.currentPage = page;
-      result.data = responses.map((values) => this.user.parseRawFromQuery(values));
+      result.data = responses.map((values) => parseRawQueryToObject(values));
       logger.info("Success: Exiting getUsers function of UserRepository");
       return result;
     } catch (err) {
@@ -79,7 +120,7 @@ class UserRepository {
     try {
       const res = await db(CONST.USERS_TABLE).where({ id }).first();
       logger.info("Success: Exiting findById function of UserRepository");
-      return res;
+      return parseRawQueryToObject(res);
     } catch (err) {
       logger.info("Error: Exiting findById function of UserRepository");
       throw new ApiError(httpStatus.BAD_REQUEST, "Internal server error", true, err);

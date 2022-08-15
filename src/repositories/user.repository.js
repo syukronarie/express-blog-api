@@ -92,12 +92,19 @@ class UserRepository {
       if (firstName) query.andWhereLike("first_name", `%${firstName}%`);
       if (lastName) query.andWhereLike("last_name", `%${lastName}%`);
       if (sortBy) query.orderBy("first_name", sortBy);
+      let count = 0;
       const responses = await query.then((res) => res);
-      const count = responses.length;
-      if (count > 0)
+      if (!!firstName || !!lastName) {
+        count = responses.length;
+      } else {
+        const data = await db(CONST.USERS_TABLE).count({ count: "*" }).first();
+        count = data.count;
+      }
+      if (count > 0) {
         responses.forEach((val) => {
           delete val.password;
         });
+      }
       result.total = Number(count);
       result.limit = limit;
       result.offset = offset;

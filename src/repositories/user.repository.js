@@ -4,7 +4,6 @@ const httpStatus = require("http-status");
 const db = require("../config/db");
 const CONST = require("../utils/Constants");
 const ApiError = require("../utils/ApiError");
-const User = require("../models/user.model");
 
 function parseRawQueryToObject(data) {
   if (!data) return null;
@@ -53,10 +52,6 @@ function parseRawObjectToQuery(data, isUpdate = false) {
 }
 
 class UserRepository {
-  constructor() {
-    this.user = new User();
-  }
-
   async create(userBody) {
     try {
       const data = parseRawObjectToQuery(userBody);
@@ -139,8 +134,8 @@ class UserRepository {
 
   async removeUserById(id) {
     try {
-      const result = await db(CONST.USERS_TABLE).where({ id }).del();
-      return { id: result, deleted: true };
+      await db(CONST.USERS_TABLE).where({ id }).del();
+      return { deleted: true };
     } catch (err) {
       throw new ApiError(httpStatus.BAD_REQUEST, "Internal server error", false, err);
     }

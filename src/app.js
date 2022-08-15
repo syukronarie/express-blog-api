@@ -1,8 +1,8 @@
+const compression = require("compression");
 const cors = require("cors");
 const express = require("express");
 const helmet = require("helmet");
 const httpStatus = require("http-status");
-const compression = require("compression");
 const xss = require("xss-clean");
 
 const config = require("./config/config");
@@ -36,10 +36,6 @@ app.use(compression());
 // enable cors
 app.use(cors());
 app.options("*", cors());
-
-app.get("/", (req, res) => {
-  res.send({ hello: "hello world!" });
-});
 
 // jwt authentication
 // app.use(passport.initialize());

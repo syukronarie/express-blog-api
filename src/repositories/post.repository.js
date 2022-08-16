@@ -88,7 +88,7 @@ class PostRepository {
       data.id = ids[0].id;
       return parseRawQueryToObject(data);
     } catch (err) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "error", true, err);
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal service error", true, err);
     }
   }
 

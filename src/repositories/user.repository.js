@@ -63,7 +63,7 @@ class UserRepository {
       delete data.password;
       return parseRawQueryToObject(data);
     } catch (err) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "error");
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", false, err);
     }
   }
 
@@ -72,7 +72,7 @@ class UserRepository {
       const res = await db(CONST.USERS_TABLE).where({ email }).first();
       return res;
     } catch (err) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Internal server error", true, err);
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", true, err);
     }
   }
 
@@ -120,7 +120,7 @@ class UserRepository {
       const res = await db(CONST.USERS_TABLE).where({ id }).first();
       return parseRawQueryToObject(res);
     } catch (err) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Internal server error", true, err);
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", true, err);
     }
   }
 
@@ -131,7 +131,7 @@ class UserRepository {
       data.id = ids[0].id;
       return parseRawQueryToObject(data);
     } catch (err) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Internal server error", false, err);
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", false, err);
     }
   }
 
@@ -140,7 +140,7 @@ class UserRepository {
       await db(CONST.USERS_TABLE).where({ id }).del();
       return { deleted: true };
     } catch (err) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Internal server error", false, err);
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", false, err);
     }
   }
 }

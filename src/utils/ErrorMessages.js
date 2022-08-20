@@ -1,6 +1,11 @@
 const ErrorMessage = {
   INVALID_TOKEN: "Invalid Token",
+  INCORRECT_EMAIL_OR_PASSWORD: "Incorrect email or password",
   NO_RECORDS_FOUND: "No Records Found",
+  NOT_FOUND: "Not found",
+  USER_NOT_FOUND: "User not found",
+  EMAIL_ALREADY_TAKEN: "Email already taken",
+  INTERNAL_SERVER_ERROR: "Internal server error",
   FILE_SIZE_ERR: "Maximum File Size exceeded",
   AUTH_ERROR: "Token is missing, Authentication Failed",
   FILE_VALIDATION_ERR: "Only PDF/Jpeg/Png file with max size 5MB is allowed",

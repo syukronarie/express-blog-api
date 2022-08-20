@@ -3,7 +3,7 @@
 const httpStatus = require("http-status");
 
 const db = require("../config/db");
-const CONST = require("../utils/Constants");
+const CONST = require("../models/constants");
 const ApiError = require("../utils/ApiError");
 const randomUUID = require("../utils/randomUUID");
 

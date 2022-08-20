@@ -2,9 +2,10 @@
 /* eslint-disable no-param-reassign */
 const httpStatus = require("http-status");
 const db = require("../config/db");
-const CONST = require("../utils/Constants");
+const CONST = require("../models/constants");
 const ApiError = require("../utils/ApiError");
 const randomUUID = require("../utils/randomUUID");
+const ERR_MSG = require("../utils/ErrorMessages");
 
 function parseRawQueryToObject(data) {
   if (!data) return null;
@@ -63,7 +64,12 @@ class UserRepository {
       delete data.password;
       return parseRawQueryToObject(data);
     } catch (err) {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", false, err);
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        false,
+        err
+      );
     }
   }
 
@@ -72,7 +78,12 @@ class UserRepository {
       const res = await db(CONST.USERS_TABLE).where({ email }).first();
       return res;
     } catch (err) {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", true, err);
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        true,
+        err
+      );
     }
   }
 
@@ -111,7 +122,12 @@ class UserRepository {
       result.data = responses.map((values) => parseRawQueryToObject(values));
       return result;
     } catch (err) {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", true, err);
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        true,
+        err
+      );
     }
   }
 
@@ -120,7 +136,26 @@ class UserRepository {
       const res = await db(CONST.USERS_TABLE).where({ id }).first();
       return parseRawQueryToObject(res);
     } catch (err) {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", true, err);
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        true,
+        err
+      );
+    }
+  }
+
+  async findByEmail(email) {
+    try {
+      const res = await db(CONST.USERS_TABLE).where({ email }).first();
+      return res;
+    } catch (err) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        true,
+        err
+      );
     }
   }
 
@@ -131,7 +166,12 @@ class UserRepository {
       data.id = ids[0].id;
       return parseRawQueryToObject(data);
     } catch (err) {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", false, err);
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        false,
+        err
+      );
     }
   }
 
@@ -140,7 +180,12 @@ class UserRepository {
       await db(CONST.USERS_TABLE).where({ id }).del();
       return { deleted: true };
     } catch (err) {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", false, err);
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        false,
+        err
+      );
     }
   }
 }

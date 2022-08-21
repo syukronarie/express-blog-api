@@ -2,6 +2,7 @@ const express = require("express");
 const userRoute = require("./user.route");
 const postRoute = require("./post.route");
 const authRoute = require("./auth.route");
+const voteRoute = require("./vote.route");
 
 const router = express.Router();
 
@@ -17,6 +18,10 @@ const defaultRoutes = [
   {
     path: "/posts",
     route: postRoute,
+  },
+  {
+    path: "/posts/votes",
+    route: voteRoute,
   },
 ];
 

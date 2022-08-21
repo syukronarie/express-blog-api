@@ -68,14 +68,12 @@ const verifyRefreshtoken = async (refreshToken) => {
   jwt.verify(decrypted, config.jwt.secret, (err, decoded) => {
     if (err) {
       result = CONST.FALSE;
-      console.log({ err });
     }
     result = {
       id: decoded.sub,
     };
   });
   const getCacheToken = myCache.get(result.id);
-  console.log({ getCacheToken });
   if (getCacheToken === undefined) {
     return CONST.FALSE;
   }

@@ -30,7 +30,8 @@ const generateAuthToken = async (user) => {
 
   const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, "days");
   const refreshToken = await generateToken(user.id, refreshTokenExpires, tokenTypes.REFRESH);
-  myCache.set(user.id, refreshToken, 21600);
+  const refreshTokenExpiresInSeconds = refreshTokenExpires.diff(moment().startOf("day"), "seconds");
+  myCache.set(user.id, refreshToken, refreshTokenExpiresInSeconds);
   return {
     access: {
       token: accessToken,
@@ -67,12 +68,14 @@ const verifyRefreshtoken = async (refreshToken) => {
   jwt.verify(decrypted, config.jwt.secret, (err, decoded) => {
     if (err) {
       result = CONST.FALSE;
+      console.log({ err });
     }
     result = {
       id: decoded.sub,
     };
   });
   const getCacheToken = myCache.get(result.id);
+  console.log({ getCacheToken });
   if (getCacheToken === undefined) {
     return CONST.FALSE;
   }

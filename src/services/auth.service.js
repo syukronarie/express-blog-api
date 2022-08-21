@@ -6,7 +6,7 @@ const userService = require("./user.service");
 
 const loginUserWithEmailAndPassword = async (email, password) => {
   const user = await userService.getUserByEmail(email);
-  if (!user || !(await user.password) === password) {
+  if (!user || user.password !== password) {
     throw new ApiError(httpStatus.UNAUTHORIZED, ERR_MSG.INCORRECT_EMAIL_OR_PASSWORD);
   }
   return user;
@@ -15,14 +15,13 @@ const loginUserWithEmailAndPassword = async (email, password) => {
 const refreshAuth = async (refreshtoken) => {
   try {
     const refreshTokenDoc = await tokenService.verifyRefreshtoken(refreshtoken);
-    console.log({ refreshTokenDoc });
     const user = await userService.getUserById(refreshTokenDoc.id);
     if (!user) {
       throw new Error(ERR_MSG.NOT_FOUND);
     }
     return tokenService.generateAuthToken(user);
   } catch (error) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, ERR_MSG.AUTH_ERROR, true, error);
+    throw new ApiError(httpStatus.UNAUTHORIZED, ERR_MSG.REFRESH_AUTH_ERROR, true, error);
   }
 };
 

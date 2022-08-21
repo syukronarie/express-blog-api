@@ -14,7 +14,8 @@ const login = catchAsync(async (req, res) => {
 
 const refreshToken = catchAsync(async (req, res) => {
   logger.info("Entering refreshToken function of auth.controller");
-  const token = await authService.refreshAuth(req.body.refreshToken);
+  console.log({ headers: req.headers });
+  const token = await authService.refreshAuth(req.headers.refreshtoken);
   logger.info("Exiting refreshToken function of auth.controller");
   return sendResponseWithData(res, token);
 });

@@ -46,14 +46,16 @@ const generateAuthToken = async (user) => {
 const verifyToken = async (token) => {
   try {
     let result = CONST.SUCCESS;
+    let message = "";
     const decrypted = await decrypt(token);
     const decoded = jwt.verify(decrypted, config.jwt.secret, (err, value) => {
       if (err) {
-        result = err.message;
+        result = CONST.FALSE;
+        message = err.message;
       }
       return value;
     });
-    return { result, decoded };
+    return { result, message, decoded };
   } catch (err) {
     return new ApiError(httpStatus.UNAUTHORIZED, ERR_MSG.AUTH_ERROR, false, err);
   }

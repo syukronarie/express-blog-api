@@ -20,7 +20,7 @@ const defaultRoutes = [
     route: postRoute,
   },
   {
-    path: "/posts/votes",
+    path: "/votes",
     route: voteRoute,
   },
 ];

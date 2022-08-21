@@ -7,7 +7,7 @@ const createVote = {
   }),
 };
 
-const getVotes = {
+const getVotesByPostId = {
   query: Joi.object().keys({
     postId: Joi.string().required(),
   }),
@@ -27,7 +27,7 @@ const deleteVote = {
 
 module.exports = {
   createVote,
-  getVotes,
+  getVotesByPostId,
   getVote,
   deleteVote,
 };

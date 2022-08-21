@@ -42,6 +42,35 @@ class VoteRepository {
       );
     }
   }
+
+  async findById(id) {
+    try {
+      const res = await db(CONST.POSTS_VOTES_TABLE).where({ id }).first();
+      return parseRawQueryToObject(res);
+    } catch (err) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        true,
+        err
+      );
+    }
+  }
+
+  async findByPostId(filter) {
+    const { postId } = filter;
+    try {
+      const res = await db(CONST.POSTS_VOTES_TABLE).where({ post_id: postId });
+      return res.map(parseRawQueryToObject);
+    } catch (err) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        true,
+        err
+      );
+    }
+  }
 }
 
 module.exports = VoteRepository;

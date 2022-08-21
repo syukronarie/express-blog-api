@@ -9,7 +9,7 @@ router.all("*", JWT.authenticateToken());
 router
   .route("/")
   .post(validate(voteValidation.createVote), voteController.createVote)
-  .get(validate(voteValidation.getVotes), voteController.getVotes);
+  .get(validate(voteValidation.getVotesByPostId), voteController.getVotesByPostId);
 
 router
   .route("/:voteId")

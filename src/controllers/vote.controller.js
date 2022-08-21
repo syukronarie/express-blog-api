@@ -22,7 +22,15 @@ const getVotesByPostId = catchAsync(async (req, res) => {
   return sendResponseWithData(res, result);
 });
 
-const getVote = catchAsync(async (_req, _res) => {});
+const getVote = catchAsync(async (req, res) => {
+  logger.info("Entering getVote function of vote.controller");
+  const vote = await voteService.getVoteById(req.params.voteId);
+  if (!vote) {
+    throw new ApiError(httpStatus.NOT_FOUND, ErrorMessage.NO_RECORDS_FOUND);
+  }
+  logger.info("Exiting getVote function of vote.controller");
+  return sendResponseWithData(res, vote);
+});
 
 const deleteVote = catchAsync(async (req, res) => {
   logger.info("Entering deleteVote function of vote.controller");

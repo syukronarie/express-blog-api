@@ -11,8 +11,12 @@ const createVote = async (voteBody) => {
 };
 
 const getVoteById = async (id) => {
-  const result = await voteRepo.findById(id);
-  return result;
+  const voteResult = await voteRepo.findById(id);
+  await userService.getUserById(voteResult.authorId).then((res) => {
+    const { userName, firstName, lastName } = res;
+    Object.assign(voteResult, { authorDetails: { userName, firstName, lastName } });
+  });
+  return voteResult;
 };
 
 const getVotesByPostId = async (postId) => {

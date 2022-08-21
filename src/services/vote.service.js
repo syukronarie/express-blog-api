@@ -1,9 +1,8 @@
-/* eslint-disable no-param-reassign */
-// const httpStatus = require("http-status");
+const httpStatus = require("http-status");
 const { userService } = require(".");
 const VoteRepository = require("../repositories/vote.repository");
-// const ApiError = require("../utils/ApiError");
-// const ErrorMessage = require("../utils/ErrorMessages");
+const ApiError = require("../utils/ApiError");
+const ErrorMessage = require("../utils/ErrorMessages");
 
 const voteRepo = new VoteRepository();
 
@@ -24,7 +23,7 @@ const getVotesByPostId = async (postId) => {
       const value = new Promise((resolve) => {
         userService.getUserById(val.authorId).then((res) => {
           const { userName, firstName, lastName } = res;
-          Object.assign(val, { userName, firstName, lastName });
+          Object.assign(val, { authorDetails: { userName, firstName, lastName } });
           resolve(val);
         });
       });
@@ -35,8 +34,18 @@ const getVotesByPostId = async (postId) => {
   return result;
 };
 
+const deleteVoteById = async (voteId) => {
+  const post = await getVoteById(voteId);
+  if (!post) {
+    throw new ApiError(httpStatus.NOT_FOUND, ErrorMessage.NOT_FOUND);
+  }
+  const result = await voteRepo.removePostById(voteId);
+  return result;
+};
+
 module.exports = {
   createVote,
   getVoteById,
   getVotesByPostId,
+  deleteVoteById,
 };

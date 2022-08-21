@@ -57,8 +57,7 @@ class VoteRepository {
     }
   }
 
-  async findByPostId(filter) {
-    const { postId } = filter;
+  async findByPostId(postId) {
     try {
       const res = await db(CONST.POSTS_VOTES_TABLE).where({ post_id: postId });
       return res.map(parseRawQueryToObject);
@@ -67,6 +66,20 @@ class VoteRepository {
         httpStatus.INTERNAL_SERVER_ERROR,
         ERR_MSG.INTERNAL_SERVER_ERROR,
         true,
+        err
+      );
+    }
+  }
+
+  async removePostById(id) {
+    try {
+      await db(CONST.POSTS_VOTES_TABLE).where({ id }).del();
+      return { deleted: true };
+    } catch (err) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        false,
         err
       );
     }

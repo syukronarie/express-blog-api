@@ -18,7 +18,7 @@ const getPosts = catchAsync(async (req, res) => {
   logger.info("Entering getPosts function of post.controller");
   const filter = pick(req.query, ["title", "content"]);
   const options = pick(req.query, ["sortBy", "limit", "page"]);
-  const result = await postService.queryPosts(filter, options);
+  const result = await postService.queryPosts(req.headers.token, filter, options);
   logger.info("Exiting getPosts function of post.controller");
   return sendResponseWithData(res, result);
 });

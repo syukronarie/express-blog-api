@@ -10,7 +10,6 @@ router
   .route("/")
   .post(validate(voteValidation.createVote), voteController.createVote)
   .get(validate(voteValidation.getVotesByPostId), voteController.getVotesByPostId);
-
 router
   .route("/:voteId")
   .get(validate(voteValidation.getVote), voteController.getVote)

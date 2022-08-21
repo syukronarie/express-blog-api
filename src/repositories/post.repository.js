@@ -5,6 +5,7 @@ const httpStatus = require("http-status");
 const db = require("../config/db");
 const CONST = require("../models/constants");
 const ApiError = require("../utils/ApiError");
+const ERR_MSG = require("../utils/ErrorMessages");
 const randomUUID = require("../utils/randomUUID");
 
 function parseRawQueryToObject(data) {
@@ -84,11 +85,16 @@ class PostRepository {
   async create(postBody) {
     try {
       const data = parseRawObjectToQuery(postBody);
-      const ids = await db(CONST.POST_TABLE).insert(data, ["id"]);
+      const ids = await db(CONST.POSTS_TABLE).insert(data, ["id"]);
       data.id = ids[0].id;
       return parseRawQueryToObject(data);
     } catch (err) {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal service error", true, err);
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        true,
+        err
+      );
     }
   }
 
@@ -102,7 +108,7 @@ class PostRepository {
     if (page < 1) page = 1;
     const offset = (page - 1) * limit;
     try {
-      const query = db(CONST.POST_TABLE).select("*").limit(limit).offset(offset);
+      const query = db(CONST.POSTS_TABLE).select("*").limit(limit).offset(offset);
       if (title) query.andWhereLike("title", `%${title}%`);
       if (content) query.andWhereLike("content", `%${content}%`);
       if (sortBy) query.orderBy("title", sortBy);
@@ -111,7 +117,7 @@ class PostRepository {
       if (!!title || !!content) {
         count = responses.length;
       } else {
-        const data = await db(CONST.POST_TABLE).count({ count: "*" }).first();
+        const data = await db(CONST.POSTS_TABLE).count({ count: "*" }).first();
         count = data.count;
       }
       if (count > 0) {
@@ -127,7 +133,56 @@ class PostRepository {
       result.data = responses.map((values) => parseRawQueryToObject(values));
       return result;
     } catch (err) {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal server error", true, err);
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        true,
+        err
+      );
+    }
+  }
+
+  async findById(id) {
+    try {
+      const res = await db(CONST.POSTS_TABLE).where({ id }).first();
+      return parseRawQueryToObject(res);
+    } catch (err) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        true,
+        err
+      );
+    }
+  }
+
+  async updatePostById(id, updateBody) {
+    try {
+      const data = parseRawObjectToQuery(updateBody, true);
+      const ids = await db(CONST.POSTS_TABLE).where({ id }).update(data, ["id"]);
+      data.id = ids[0].id;
+      return parseRawQueryToObject(data);
+    } catch (err) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        false,
+        err
+      );
+    }
+  }
+
+  async removePostById(id) {
+    try {
+      await db(CONST.POSTS_TABLE).where({ id }).del();
+      return { deleted: true };
+    } catch (err) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        false,
+        err
+      );
     }
   }
 }

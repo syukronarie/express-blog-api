@@ -8,8 +8,8 @@ const login = {
 };
 
 const refreshToken = {
-  body: Joi.object().keys({
-    refreshToken: Joi.string().required(),
+  headers: Joi.object().keys({
+    refreshtoken: Joi.string().required(),
   }),
 };
 

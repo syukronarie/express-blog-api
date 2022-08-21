@@ -12,9 +12,10 @@ const loginUserWithEmailAndPassword = async (email, password) => {
   return user;
 };
 
-const refreshAuth = async (refreshToken) => {
+const refreshAuth = async (refreshtoken) => {
   try {
-    const refreshTokenDoc = await tokenService.verifyRefreshtoken(refreshToken);
+    const refreshTokenDoc = await tokenService.verifyRefreshtoken(refreshtoken);
+    console.log({ refreshTokenDoc });
     const user = await userService.getUserById(refreshTokenDoc.id);
     if (!user) {
       throw new Error(ERR_MSG.NOT_FOUND);

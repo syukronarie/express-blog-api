@@ -14,7 +14,6 @@ const authenticateToken = () => async (req, res, next) => {
     req.decoded = decoded;
     return next();
   }
-
   return sendResponseWithData(res, message, httpStatus.FORBIDDEN);
 };
 

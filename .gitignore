@@ -105,6 +105,6 @@ dist
 # TernJS port file
 .tern-port
 
-# pem
-private-key.pem
-public-key.pem
+## PEM-encoded certificate data
+*.pem
+pem

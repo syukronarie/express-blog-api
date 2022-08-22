@@ -159,7 +159,6 @@ class PostRepository {
   async updatePostById(id, updateBody) {
     try {
       const data = parseRawObjectToQuery(updateBody, true);
-      console.log({ id });
       const ids = await db(CONST.POSTS_TABLE).where({ id }).update(data, ["id"]);
       data.id = ids[0].id;
       return parseRawQueryToObject(data);

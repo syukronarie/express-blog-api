@@ -63,7 +63,6 @@ class VoteRepository {
       const res = await db(CONST.POSTS_VOTES_TABLE).where(queryObj).first();
       return parseRawQueryToObject(res);
     } catch (err) {
-      console.log(err);
       throw new ApiError(
         httpStatus.INTERNAL_SERVER_ERROR,
         ERR_MSG.INTERNAL_SERVER_ERROR,

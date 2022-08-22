@@ -13,6 +13,7 @@ const ErrorMessage = {
   MANDATORY_FIELD_MISSING_ERROR: "Mandatory Field/s missing",
   INVALID_UPLOAD_FORM: "Invalid Details for Form upload",
   ID_MISSING: "ID is missing",
+  YOU_HAVE_ALREADY_VOTED: "You have already voted",
 };
 
 module.exports = ErrorMessage;

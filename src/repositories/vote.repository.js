@@ -57,6 +57,22 @@ class VoteRepository {
     }
   }
 
+  async findByAuthorAndPostId(data) {
+    try {
+      const queryObj = parseRawObjectToQuery(data);
+      const res = await db(CONST.POSTS_VOTES_TABLE).where(queryObj).first();
+      return parseRawQueryToObject(res);
+    } catch (err) {
+      console.log(err);
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ERR_MSG.INTERNAL_SERVER_ERROR,
+        true,
+        err
+      );
+    }
+  }
+
   async findByPostId(postId) {
     try {
       const res = await db(CONST.POSTS_VOTES_TABLE).where({ post_id: postId });
@@ -71,7 +87,7 @@ class VoteRepository {
     }
   }
 
-  async removePostById(id) {
+  async removeVoteById(id) {
     try {
       await db(CONST.POSTS_VOTES_TABLE).where({ id }).del();
       return { deleted: true };

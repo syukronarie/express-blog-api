@@ -1,5 +1,6 @@
 const httpStatus = require("http-status");
 const { userService } = require(".");
+const CONST = require("../models/constants");
 const VoteRepository = require("../repositories/vote.repository");
 const ApiError = require("../utils/ApiError");
 const ErrorMessage = require("../utils/ErrorMessages");
@@ -7,15 +8,21 @@ const ErrorMessage = require("../utils/ErrorMessages");
 const voteRepo = new VoteRepository();
 
 const createVote = async (voteBody) => {
+  const vote = await voteRepo.findByAuthorAndPostId(voteBody);
+  if (vote) {
+    throw new ApiError(httpStatus.BAD_REQUEST, ErrorMessage.YOU_HAVE_ALREADY_VOTED);
+  }
   return voteRepo.create(voteBody);
 };
 
 const getVoteById = async (id) => {
   const voteResult = await voteRepo.findById(id);
-  await userService.getUserById(voteResult.authorId).then((res) => {
-    const { userName, firstName, lastName } = res;
-    Object.assign(voteResult, { authorDetails: { userName, firstName, lastName } });
-  });
+  if (voteResult) {
+    await userService.getUserById(voteResult.authorId).then((res) => {
+      const { userName, firstName, lastName } = res;
+      Object.assign(voteResult, { authorDetails: { userName, firstName, lastName } });
+    });
+  }
   return voteResult;
 };
 
@@ -33,9 +40,10 @@ const getVotesByPostId = async (postId) => {
       });
       promises.push(value);
     });
+    const result = await Promise.all(promises).then((res) => res);
+    return result;
   }
-  const result = await Promise.all(promises).then((res) => res);
-  return result;
+  return CONST.FALSE;
 };
 
 const deleteVoteById = async (voteId) => {
@@ -43,7 +51,7 @@ const deleteVoteById = async (voteId) => {
   if (!post) {
     throw new ApiError(httpStatus.NOT_FOUND, ErrorMessage.NOT_FOUND);
   }
-  const result = await voteRepo.removePostById(voteId);
+  const result = await voteRepo.removeVoteById(voteId);
   return result;
 };
 

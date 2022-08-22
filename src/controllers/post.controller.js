@@ -1,11 +1,13 @@
 const httpStatus = require("http-status");
 const catchAsync = require("../utils/catchAsync");
 const postService = require("../services/post.service");
+const voteService = require("../services/vote.service");
 const logger = require("../config/logger");
 const { sendResponseWithData } = require("../utils/responses");
 const pick = require("../utils/pick");
 const ApiError = require("../utils/ApiError");
 const ERR_MSG = require("../utils/ErrorMessages");
+const CONST = require("../models/constants");
 
 const createPost = catchAsync(async (req, res) => {
   logger.info("Entering createPost function of post.controller");
@@ -25,7 +27,7 @@ const getPosts = catchAsync(async (req, res) => {
 
 const getPost = catchAsync(async (req, res) => {
   logger.info("Entering getPost function of post.controller");
-  const post = await postService.getPostById(req.params.postId);
+  const post = await postService.getPostById(req.params.postId, req.decoded);
   if (!post) {
     throw new ApiError(httpStatus.NOT_FOUND, ERR_MSG.NO_RECORDS_FOUND);
   }
@@ -35,7 +37,7 @@ const getPost = catchAsync(async (req, res) => {
 
 const updatePost = catchAsync(async (req, res) => {
   logger.info("Entering updatePost function of post.controller");
-  const post = await postService.updatePostById(req.params.postId, req.body);
+  const post = await postService.updatePostById(req.params.postId, req.decoded, req.body);
   if (!post) {
     throw new ApiError(httpStatus.NOT_FOUND, ERR_MSG.NO_RECORDS_FOUND);
   }
@@ -45,7 +47,13 @@ const updatePost = catchAsync(async (req, res) => {
 
 const deletePost = catchAsync(async (req, res) => {
   logger.info("Entering deletePost function of post.controller");
-  const post = await postService.deletePostById(req.params.postId);
+  const vote = await voteService.getVotesByPostId(req.params.postId);
+  if (vote !== CONST.FALSE) {
+    await vote.forEach((val) => {
+      voteService.deleteVoteById(val.id);
+    });
+  }
+  const post = await postService.deletePostById(req.params.postId, req.decoded);
   if (!post) {
     throw new ApiError(httpStatus.NOT_FOUND, ERR_MSG.NO_RECORDS_FOUND);
   }

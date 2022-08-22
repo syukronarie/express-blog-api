@@ -9,7 +9,7 @@ const ErrorMessage = require("../utils/ErrorMessages");
 
 const createVote = catchAsync(async (req, res) => {
   logger.info("Entering createVote function of vote.controller");
-  const vote = await voteService.createVote(req.body);
+  const vote = await voteService.createVote(req.decoded, req.body);
   logger.info("Exiting createVote function of vote.controller");
   return sendResponseWithData(res, vote, httpStatus.CREATED);
 });

@@ -4,6 +4,7 @@ const ErrorMessage = require("../utils/ErrorMessages");
 const PostRepository = require("../repositories/post.repository");
 const voteService = require("./vote.service");
 const { tokenService } = require(".");
+const CONST = require("../models/constants");
 
 const postRepo = new PostRepository();
 
@@ -19,13 +20,15 @@ const queryPosts = async (token, filter, options) => {
     postResults.data.forEach((val) => {
       const value = new Promise((resolve) => {
         voteService.getVotesByPostId(val.id).then((res) => {
-          let hasVoted = false;
-          if (res.length > 0) {
-            res.forEach((vote) => {
-              if (decoded.sub === vote.authorId) hasVoted = true;
-            });
+          if (res !== CONST.FALSE) {
+            let hasVoted = false;
+            if (res.length > 0) {
+              res.forEach((vote) => {
+                if (decoded.sub === vote.authorId) hasVoted = true;
+              });
+            }
+            Object.assign(val, { voteCount: res.length, hasVoted });
           }
-          Object.assign(val, { voteCount: res.length, hasVoted });
           resolve(val);
         });
       });

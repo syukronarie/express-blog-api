@@ -9,7 +9,7 @@ const login = catchAsync(async (req, res) => {
   const user = await authService.loginUserWithEmailAndPassword(email, password);
   const token = await tokenService.generateAuthToken(user);
   logger.info("Exiting login function of auth.controller");
-  return sendResponseWithData(res, token);
+  return sendResponseWithData(res, { ...token, sub: user.id });
 });
 
 const refreshToken = catchAsync(async (req, res) => {

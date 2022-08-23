@@ -19,7 +19,8 @@ const refreshAuth = async (refreshtoken) => {
     if (!user) {
       throw new Error(ERR_MSG.NOT_FOUND);
     }
-    return tokenService.generateAuthToken(user);
+    const newToken = await tokenService.generateAuthToken(user);
+    return { ...newToken, sub: user.id };
   } catch (error) {
     throw new ApiError(httpStatus.UNAUTHORIZED, ERR_MSG.REFRESH_AUTH_ERROR, true, error);
   }

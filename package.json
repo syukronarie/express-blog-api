@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/syukronarie/express-blog-api#readme",
   "scripts": {
-    "start": "env-cmd -f ./.env.production cross-env NODE_ENV=production node src/index.js",
+    "start": "env-cmd -f ./.env cross-env NODE_ENV=production node src/index.js",
     "dev": "env-cmd -f ./.env.development cross-env NODE_ENV=development nodemon src/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

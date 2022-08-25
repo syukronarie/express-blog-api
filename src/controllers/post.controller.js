@@ -20,14 +20,14 @@ const getPosts = catchAsync(async (req, res) => {
   logger.info("Entering getPosts function of post.controller");
   const filter = pick(req.query, ["title", "content"]);
   const options = pick(req.query, ["sortBy", "limit", "page"]);
-  const result = await postService.queryPosts(req.headers.token, filter, options);
+  const result = await postService.queryPosts(req.decoded, filter, options);
   logger.info("Exiting getPosts function of post.controller");
   return sendResponseWithData(res, result);
 });
 
 const getPost = catchAsync(async (req, res) => {
   logger.info("Entering getPost function of post.controller");
-  const post = await postService.getPostById(req.params.postId, req.decoded);
+  const post = await postService.getPostById(req.decoded, req.params.postId);
   if (!post) {
     throw new ApiError(httpStatus.NOT_FOUND, ERR_MSG.NO_RECORDS_FOUND);
   }

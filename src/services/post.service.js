@@ -3,7 +3,6 @@ const ApiError = require("../utils/ApiError");
 const ErrorMessage = require("../utils/ErrorMessages");
 const PostRepository = require("../repositories/post.repository");
 const voteService = require("./vote.service");
-const { tokenService } = require(".");
 const CONST = require("../models/constants");
 
 const postRepo = new PostRepository();
@@ -12,23 +11,24 @@ const createPost = async (postBody) => {
   return postRepo.create(postBody);
 };
 
-const queryPosts = async (token, filter, options) => {
+const queryPosts = async (decoded, filter, options) => {
   const postResults = await postRepo.getPosts(filter, options);
   const promises = [];
   if (postResults.data.length > 0) {
-    const { decoded } = await tokenService.verifyToken(token);
     postResults.data.forEach((val) => {
       const value = new Promise((resolve) => {
         voteService.getVotesByPostId(val.id).then((res) => {
+          let hasVoted = false;
+          let voteCount = 0;
           if (res !== CONST.FALSE) {
-            let hasVoted = false;
-            if (res.length > 0) {
+            if (res.length > 0 && decoded) {
               res.forEach((vote) => {
                 if (decoded.sub === vote.authorId) hasVoted = true;
               });
             }
-            Object.assign(val, { voteCount: res.length, hasVoted });
+            voteCount = res.length;
           }
+          Object.assign(val, { voteCount, hasVoted });
           resolve(val);
         });
       });
@@ -39,12 +39,12 @@ const queryPosts = async (token, filter, options) => {
   return result;
 };
 
-const getPostById = async (id, decoded) => {
+const getPostById = async (decoded, id) => {
   const result = await postRepo.findById(id);
   if (result) {
     await voteService.getVotesByPostId(result.id).then((res) => {
       let hasVoted = false;
-      if (res.length > 0) {
+      if (res.length > 0 && decoded) {
         res.forEach((vote) => {
           if (decoded.sub === vote.authorId) hasVoted = true;
         });

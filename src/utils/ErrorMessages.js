@@ -5,6 +5,7 @@ const ErrorMessage = {
   NOT_FOUND: "Not found",
   USER_NOT_FOUND: "User not found",
   EMAIL_ALREADY_TAKEN: "Email already taken",
+  CATEGORY_ALREADY_TAKEN: "Category already taken",
   INTERNAL_SERVER_ERROR: "Internal server error",
   FILE_SIZE_ERR: "Maximum File Size exceeded",
   AUTH_ERROR: "Token is missing, Authentication Failed",

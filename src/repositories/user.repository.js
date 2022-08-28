@@ -4,7 +4,7 @@ const httpStatus = require("http-status");
 const db = require("../config/db");
 const CONST = require("../models/constants");
 const ApiError = require("../utils/ApiError");
-const randomUUID = require("../utils/randomUUID");
+const generateRandomUUID = require("../utils/randomUUID");
 const ERR_MSG = require("../utils/ErrorMessages");
 
 function parseRawQueryToObject(data) {
@@ -24,7 +24,7 @@ function parseRawQueryToObject(data) {
 function parseRawObjectToQuery(data, isUpdate = false) {
   if (!data) return null;
   const {
-    id = randomUUID,
+    id = generateRandomUUID(),
     email,
     password,
     userName,

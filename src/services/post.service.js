@@ -39,15 +39,17 @@ const queryPosts = async (decoded, filter, options) => {
   return result;
 };
 
-const getPostById = async (decoded, id) => {
+const getPostById = async (id, decoded) => {
   const result = await postRepo.findById(id);
   if (result) {
     await voteService.getVotesByPostId(result.id).then((res) => {
       let hasVoted = false;
-      if (res.length > 0 && decoded) {
-        res.forEach((vote) => {
-          if (decoded.sub === vote.authorId) hasVoted = true;
-        });
+      if (res !== CONST.FALSE) {
+        if (res.length > 0 && decoded) {
+          res.forEach((vote) => {
+            if (decoded.sub === vote.authorId) hasVoted = true;
+          });
+        }
       }
       Object.assign(result, { voteCount: res.length, hasVoted });
     });
@@ -60,6 +62,9 @@ const updatePostById = async (postId, decoded, updateBody) => {
   if (!post) {
     throw new ApiError(httpStatus.NOT_FOUND, ErrorMessage.NOT_FOUND);
   }
+  if (decoded.sub !== post.authorId) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, ErrorMessage.INVALID_TOKEN);
+  }
   const result = await postRepo.updatePostById(postId, updateBody);
   return result;
 };
@@ -68,6 +73,9 @@ const deletePostById = async (postId, decoded) => {
   const post = await getPostById(postId, decoded);
   if (!post) {
     throw new ApiError(httpStatus.NOT_FOUND, ErrorMessage.NOT_FOUND);
+  }
+  if (decoded.sub !== post.authorId) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, ErrorMessage.INVALID_TOKEN);
   }
   const result = await postRepo.removePostById(postId);
   return result;

@@ -11,7 +11,7 @@ router
   .get(JWT.authenticateToken(), validate(userValidation.getUsers), userController.getUsers);
 router
   .route("/:userId")
-  .get(JWT.authenticateToken(), validate(userValidation.getUser), userController.getUser)
+  .get(validate(userValidation.getUser), userController.getUser)
   .patch(JWT.authenticateToken(), validate(userValidation.updateUser), userController.updateUser)
   .delete(JWT.authenticateToken(), validate(userValidation.deleteUser), userController.deleteUser);
 

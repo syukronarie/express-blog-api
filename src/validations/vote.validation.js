@@ -2,7 +2,6 @@ const Joi = require("joi");
 
 const createVote = {
   body: Joi.object().keys({
-    authorId: Joi.string().required(),
     postId: Joi.string().required(),
   }),
 };
@@ -19,6 +18,12 @@ const getVote = {
   }),
 };
 
+const updateVote = {
+  body: Joi.object().keys({
+    postId: Joi.string().required(),
+  }),
+};
+
 const deleteVote = {
   params: Joi.object().keys({
     voteId: Joi.string().required(),
@@ -28,6 +33,7 @@ const deleteVote = {
 module.exports = {
   createVote,
   getVotesByPostId,
+  updateVote,
   getVote,
   deleteVote,
 };

@@ -27,7 +27,7 @@ const getPosts = catchAsync(async (req, res) => {
 
 const getPost = catchAsync(async (req, res) => {
   logger.info("Entering getPost function of post.controller");
-  const post = await postService.getPostById(req.decoded, req.params.postId);
+  const post = await postService.getPostById(req.params.postId, req.decoded);
   if (!post) {
     throw new ApiError(httpStatus.NOT_FOUND, ERR_MSG.NO_RECORDS_FOUND);
   }

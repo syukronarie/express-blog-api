@@ -55,7 +55,6 @@ function parseRawObjectToQuery(data, isUpdate = false) {
   } = data;
   if (isUpdate) {
     return {
-      authorId,
       categories,
       tags,
       title,

@@ -34,7 +34,14 @@ const updateCategoryById = async (categoryId, updateBody) => {
   return result;
 };
 
-const deleteCategoryById = async (categoryId) => {};
+const deleteCategoryById = async (categoryId) => {
+  const post = await getCategoryById(categoryId);
+  if (!post) {
+    throw new ApiError(httpStatus.NOT_FOUND, ErrorMessage.NOT_FOUND);
+  }
+  const result = await categoryRepo.removePostById(categoryId);
+  return result;
+};
 
 module.exports = {
   createCategory,

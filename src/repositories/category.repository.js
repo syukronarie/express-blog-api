@@ -135,6 +135,20 @@ class CategoryRepo {
       );
     }
   }
+
+  async removePostById(id) {
+    try {
+      await db(CONST.POSTS_CATEGORIES_TABLE).where({ id }).del();
+      return { deleted: true };
+    } catch (err) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ErrorMessage.INTERNAL_SERVER_ERROR,
+        true,
+        err
+      );
+    }
+  }
 }
 
 module.exports = CategoryRepo;

@@ -105,6 +105,20 @@ class CategoryRepo {
       );
     }
   }
+
+  async findById(id) {
+    try {
+      const res = await db(CONST.POSTS_CATEGORIES_TABLE).where({ id }).first();
+      return parseRawQueryToObject(res);
+    } catch (err) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ErrorMessage.INTERNAL_SERVER_ERROR,
+        true,
+        err
+      );
+    }
+  }
 }
 
 module.exports = CategoryRepo;

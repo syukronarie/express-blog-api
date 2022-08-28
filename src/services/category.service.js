@@ -20,7 +20,10 @@ const queryCategories = async (filter, options) => {
   return result;
 };
 
-const getCategoryById = async (id) => {};
+const getCategoryById = async (id) => {
+  const result = await categoryRepo.findById(id);
+  return result;
+};
 
 const updateCategoryById = async (categoryId, updateBody) => {};
 

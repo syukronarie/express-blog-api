@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
 const ErrorMessage = require("../utils/ErrorMessages");
@@ -7,7 +8,9 @@ const CONST = require("../models/constants");
 
 const postRepo = new PostRepository();
 
-const createPost = async (postBody) => {
+const createPost = async (postBody, decoded) => {
+  const { sub } = decoded;
+  postBody.authorId = sub;
   return postRepo.create(postBody);
 };
 

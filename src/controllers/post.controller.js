@@ -11,7 +11,7 @@ const CONST = require("../models/constants");
 
 const createPost = catchAsync(async (req, res) => {
   logger.info("Entering createPost function of post.controller");
-  const post = await postService.createPost(req.body);
+  const post = await postService.createPost(req.body, req.decoded);
   logger.info("Exiting createPost function of post.controller");
   return sendResponseWithData(res, post, httpStatus.CREATED);
 });

@@ -2,7 +2,6 @@ const Joi = require("joi");
 
 const createPost = {
   body: Joi.object().keys({
-    authorId: Joi.string().required(),
     isPublished: Joi.boolean(),
     bannerImage: Joi.string(),
     content: Joi.string().required(),

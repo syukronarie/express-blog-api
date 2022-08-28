@@ -84,7 +84,6 @@ class PostRepository {
   async create(postBody) {
     try {
       const data = parseRawObjectToQuery(postBody);
-      console.log({ data });
       const ids = await db(CONST.POSTS_TABLE).insert(data, ["id"]);
       data.id = ids[0].id;
       return parseRawQueryToObject(data);

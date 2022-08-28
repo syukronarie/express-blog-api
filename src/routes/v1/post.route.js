@@ -8,7 +8,7 @@ const router = express.Router();
 router
   .route("/")
   .post(JWT.authenticateToken(), validate(postValidation.createPost), postController.createPost)
-  .get(validate(postValidation.getPosts), postController.getPosts);
+  .get(JWT.decodedToken(), validate(postValidation.getPosts), postController.getPosts);
 router
   .route("/:postId")
   .get(validate(postValidation.getPost), postController.getPost)

@@ -5,6 +5,7 @@ const ErrorMessage = require("../utils/ErrorMessages");
 const PostRepository = require("../repositories/post.repository");
 const voteService = require("./vote.service");
 const CONST = require("../models/constants");
+const { userService } = require(".");
 
 const postRepo = new PostRepository();
 
@@ -16,30 +17,30 @@ const createPost = async (postBody, decoded) => {
 
 const queryPosts = async (decoded, filter, options) => {
   const postResults = await postRepo.getPosts(filter, options);
-  const promises = [];
+  let promises = [];
   if (postResults.data.length > 0) {
-    postResults.data.forEach((val) => {
-      const value = new Promise((resolve) => {
-        voteService.getVotesByPostId(val.id).then((res) => {
-          let hasVoted = false;
-          let voteCount = 0;
-          if (res !== CONST.FALSE) {
-            if (res.length > 0 && decoded) {
-              res.forEach((vote) => {
-                if (decoded.sub === vote.authorId) hasVoted = true;
-              });
-            }
-            voteCount = res.length;
-          }
-          Object.assign(val, { voteCount, hasVoted });
-          resolve(val);
-        });
-      });
-      promises.push(value);
+    promises = postResults.data.map(async (val) => {
+      const votes = await voteService.getVotesByPostId(val.id);
+      let hasVoted = false;
+      let voteCount = 0;
+      if (votes !== CONST.FALSE) {
+        if (votes.length > 0 && decoded) {
+          votes.forEach((vote) => {
+            if (decoded.sub === vote.authorId) hasVoted = true;
+          });
+        }
+        voteCount = votes.length;
+      }
+      val.voteCount = voteCount;
+      val.hasVoted = hasVoted;
+      const author = await userService.getUserById(val.authorId);
+      val.authorDetails = author;
+      delete val.authorId;
+      return val;
     });
   }
-  const result = await Promise.all(promises).then((res) => res);
-  return result;
+  promises = await Promise.all(promises).then((res) => res);
+  return promises;
 };
 
 const getPostById = async (id, decoded) => {

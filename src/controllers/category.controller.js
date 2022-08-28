@@ -18,7 +18,7 @@ const getCategories = catchAsync(async (req, res) => {
   logger.info("Entering getCategories function of category.controller");
   const filter = pick(req.query, ["title"]);
   const options = pick(req.query, ["sortBy", "limit", "page"]);
-  const result = await categoryService.queryCategorys(filter, options);
+  const result = await categoryService.queryCategories(filter, options);
   logger.info("Exiting getCategories function of category.controller");
   return sendResponseWithData(res, result);
 });

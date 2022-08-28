@@ -119,6 +119,22 @@ class CategoryRepo {
       );
     }
   }
+
+  async updateCategoryById(id, updateBody) {
+    try {
+      const data = parseRawObjectToQuery(updateBody, true);
+      const ids = await db(CONST.POSTS_CATEGORIES_TABLE).where({ id }).update(data, ["id"]);
+      data.id = ids[0].id;
+      return parseRawQueryToObject(data);
+    } catch (err) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        ErrorMessage.INTERNAL_SERVER_ERROR,
+        true,
+        err
+      );
+    }
+  }
 }
 
 module.exports = CategoryRepo;

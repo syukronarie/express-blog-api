@@ -25,7 +25,14 @@ const getCategoryById = async (id) => {
   return result;
 };
 
-const updateCategoryById = async (categoryId, updateBody) => {};
+const updateCategoryById = async (categoryId, updateBody) => {
+  const category = await getCategoryById(categoryId);
+  if (!category) {
+    throw new ApiError(httpStatus.NOT_FOUND, ErrorMessage.NO_RECORDS_FOUND);
+  }
+  const result = await categoryRepo.updateCategoryById(categoryId, updateBody);
+  return result;
+};
 
 const deleteCategoryById = async (categoryId) => {};
 

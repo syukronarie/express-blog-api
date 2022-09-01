@@ -4,10 +4,10 @@ const ERR_MSG = require("../utils/ErrorMessages");
 const tokenService = require("./token.service");
 const userService = require("./user.service");
 
-const loginUserWithEmailAndPassword = async (email, password) => {
+const loginUserWithEmail = async (email) => {
   const user = await userService.getUserByEmail(email);
-  if (!user || user.password !== password) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, ERR_MSG.INCORRECT_EMAIL_OR_PASSWORD);
+  if (!user) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, ERR_MSG.EMAIL_IS_NOT_REGISTERED);
   }
   return user;
 };
@@ -27,6 +27,6 @@ const refreshAuth = async (refreshtoken) => {
 };
 
 module.exports = {
-  loginUserWithEmailAndPassword,
+  loginUserWithEmail,
   refreshAuth,
 };

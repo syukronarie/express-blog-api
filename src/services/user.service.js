@@ -1,8 +1,10 @@
+const bcrypt = require("bcrypt");
 const httpStatus = require("http-status");
 const logger = require("../config/logger");
 const UserRepository = require("../repositories/user.repository");
 const ApiError = require("../utils/ApiError");
 const ERR_MSG = require("../utils/ErrorMessages");
+const { encode } = require("../middlewares/base64");
 
 const userRepo = new UserRepository();
 
@@ -11,7 +13,15 @@ const createUser = async (userBody) => {
     logger.info(JSON.stringify({ BAD_REQUEST: httpStatus.BAD_REQUEST }));
     throw new ApiError(httpStatus.BAD_REQUEST, ERR_MSG.EMAIL_ALREADY_TAKEN);
   }
-  return userRepo.create(userBody);
+  const encryptedPass = encode(userBody.password);
+  const saltRounds = 10;
+  bcrypt.genSalt(saltRounds, (_, salt) => {
+    bcrypt.hash(encryptedPass, salt, (__, hash) => {
+      // eslint-disable-next-line no-param-reassign
+      userBody.password = hash;
+      return userRepo.create(userBody);
+    });
+  });
 };
 
 const queryUsers = async (filter, options) => {

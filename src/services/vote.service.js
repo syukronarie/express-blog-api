@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const httpStatus = require("http-status");
 const { userService } = require(".");
 const CONST = require("../models/constants");
@@ -13,6 +14,7 @@ const createVote = async (decoded, voteBody) => {
   if (vote) {
     throw new ApiError(httpStatus.BAD_REQUEST, ErrorMessage.YOU_HAVE_ALREADY_VOTED);
   }
+  voteBody.authorId = id;
   return voteRepo.create(voteBody);
 };
 

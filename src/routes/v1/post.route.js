@@ -5,15 +5,14 @@ const postController = require("../../controllers/post.controller");
 const JWT = require("../../middlewares/jwt");
 
 const router = express.Router();
-router.all("*", JWT.authenticateToken());
 router
   .route("/")
-  .post(validate(postValidation.createPost), postController.createPost)
-  .get(validate(postValidation.getPosts), postController.getPosts);
+  .post(JWT.authenticateToken(), validate(postValidation.createPost), postController.createPost)
+  .get(JWT.decodedToken(), validate(postValidation.getPosts), postController.getPosts);
 router
   .route("/:postId")
   .get(validate(postValidation.getPost), postController.getPost)
-  .patch(validate(postValidation.updatePost), postController.updatePost)
-  .delete(validate(postValidation.deletePost), postController.deletePost);
+  .patch(JWT.authenticateToken(), validate(postValidation.updatePost), postController.updatePost)
+  .delete(JWT.authenticateToken(), validate(postValidation.deletePost), postController.deletePost);
 
 module.exports = router;

@@ -3,6 +3,7 @@ const userRoute = require("./user.route");
 const postRoute = require("./post.route");
 const authRoute = require("./auth.route");
 const voteRoute = require("./vote.route");
+const categoryRoute = require("./category.route");
 
 const router = express.Router();
 
@@ -22,6 +23,10 @@ const defaultRoutes = [
   {
     path: "/votes",
     route: voteRoute,
+  },
+  {
+    path: "/category",
+    route: categoryRoute,
   },
 ];
 

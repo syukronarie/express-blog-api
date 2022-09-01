@@ -57,8 +57,9 @@ class VoteRepository {
     }
   }
 
-  async findByAuthorAndPostId(data) {
+  async findByAuthorAndPostId(authorId, data) {
     try {
+      data.authorId = authorId;
       const queryObj = parseRawObjectToQuery(data);
       const res = await db(CONST.POSTS_VOTES_TABLE).where(queryObj).first();
       return parseRawQueryToObject(res);

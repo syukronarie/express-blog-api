@@ -17,6 +17,17 @@ const authenticateToken = () => async (req, res, next) => {
   return sendResponseWithData(res, message, httpStatus.FORBIDDEN);
 };
 
+const decodedToken = () => async (req, res, next) => {
+  const authHeader = req.headers.token || null;
+  const authResult = await token.verifyToken(authHeader);
+  const { result, decoded } = authResult;
+  if (result === CONST.SUCCESS) {
+    req.decoded = decoded;
+  }
+  return next();
+};
+
 module.exports = {
   authenticateToken,
+  decodedToken,
 };

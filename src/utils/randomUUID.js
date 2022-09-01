@@ -1,4 +1,4 @@
 const { v4 } = require("uuid");
 
-const randomUUID = v4();
-module.exports = randomUUID;
+const generateRandomUUID = () => v4();
+module.exports = generateRandomUUID;

@@ -6,7 +6,7 @@ const db = require("../config/db");
 const CONST = require("../models/constants");
 const ApiError = require("../utils/ApiError");
 const ERR_MSG = require("../utils/ErrorMessages");
-const randomUUID = require("../utils/randomUUID");
+const generateRandomUUID = require("../utils/randomUUID");
 
 function parseRawQueryToObject(data) {
   if (!data) return null;
@@ -41,7 +41,7 @@ function parseRawQueryToObject(data) {
 function parseRawObjectToQuery(data, isUpdate = false) {
   if (!data) return null;
   const {
-    id = randomUUID,
+    id = generateRandomUUID(),
     authorId,
     bannerImage,
     content,
@@ -55,7 +55,6 @@ function parseRawObjectToQuery(data, isUpdate = false) {
   } = data;
   if (isUpdate) {
     return {
-      authorId,
       categories,
       tags,
       title,

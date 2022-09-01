@@ -14,6 +14,13 @@ const createVote = catchAsync(async (req, res) => {
   return sendResponseWithData(res, vote, httpStatus.CREATED);
 });
 
+const updateVote = catchAsync(async (req, res) => {
+  logger.info("Entering updateVote function of vote.controller");
+  const vote = await voteService.updateVote(req.decoded, req.body);
+  logger.info("Exiting updateVote function of vote.controller");
+  return sendResponseWithData(res, vote, httpStatus.CREATED);
+});
+
 const getVotesByPostId = catchAsync(async (req, res) => {
   logger.info("Entering getVotesByPostId function of post.controller");
   const filter = pick(req.query, ["postId"]);
@@ -44,6 +51,7 @@ const deleteVote = catchAsync(async (req, res) => {
 
 module.exports = {
   createVote,
+  updateVote,
   getVotesByPostId,
   getVote,
   deleteVote,

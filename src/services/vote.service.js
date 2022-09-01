@@ -7,12 +7,20 @@ const ErrorMessage = require("../utils/ErrorMessages");
 
 const voteRepo = new VoteRepository();
 
-const createVote = async (voteBody) => {
-  const vote = await voteRepo.findByAuthorAndPostId(voteBody);
+const createVote = async (decoded, voteBody) => {
+  const id = decoded.sub;
+  const vote = await voteRepo.findByAuthorAndPostId(id, voteBody);
   if (vote) {
     throw new ApiError(httpStatus.BAD_REQUEST, ErrorMessage.YOU_HAVE_ALREADY_VOTED);
   }
   return voteRepo.create(voteBody);
+};
+
+const updateVote = async (decoded, voteBody) => {
+  const id = decoded.sub;
+  const vote = await voteRepo.findByAuthorAndPostId(id, voteBody);
+  const result = await voteRepo.removeVoteById(vote.id);
+  return result;
 };
 
 const getVoteById = async (id) => {
@@ -57,6 +65,7 @@ const deleteVoteById = async (voteId) => {
 
 module.exports = {
   createVote,
+  updateVote,
   getVoteById,
   getVotesByPostId,
   deleteVoteById,
